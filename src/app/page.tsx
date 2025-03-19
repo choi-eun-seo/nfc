@@ -1,9 +1,11 @@
-export default function Page() {
-    return (
-      <div>
-        <h1>NFC 페이지</h1>
-        <p>📡 NFC 태그를 기기에 가까이 가져가세요.</p>
-      </div>
-    );
-  }
-  
+import Link from "next/link";
+
+export default function Home() {
+  return (
+    <div>
+      <h1>🏠 홈 페이지</h1>
+      <p>이곳은 Next.js 애플리케이션의 메인 페이지입니다.</p>
+      <Link href="/nfc">📡 NFC 페이지로 이동</Link>
+    </div>
+  );
+}
