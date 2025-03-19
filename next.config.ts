@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
-  experimental: {
-    appDir: true,
-  },
+  experimental: {}, // 🔴 `appDir: true` 제거
 };
 
-module.exports = nextConfig;
+export default nextConfig;

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     NDEFReader?: any;
   }
 }
@@ -13,10 +14,12 @@ const NFCReader: React.FC = () => {
     const readNFC = async () => {
       if ("NDEFReader" in window) {
         try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const ndef = new (window as any).NDEFReader();
           await ndef.scan();
           console.log("✅ NFC 리더 시작됨");
 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ndef.onreading = (event: any) => {
             console.log("📡 NFC 태그 감지됨!");
 
@@ -24,6 +27,7 @@ const NFCReader: React.FC = () => {
             console.log(`🔹 Serial Number: ${serialNumber}`);
 
             const records = event.message.records;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             records.forEach((record: any, index: number) => {
               console.log(`📌 Record ${index + 1}:`, record);
               if (record.recordType === "text") {
