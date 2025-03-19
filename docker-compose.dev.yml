@@ -1,0 +1,36 @@
+version: "3.8"
+
+name: hoik-recruit
+
+services:
+  app:
+    container_name: hoik-recruit
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: "sh -c 'dotenv -e .env.development -- yarn prisma migrate deploy && yarn prisma generate && yarn next dev'"
+    restart: always
+    ports:
+      - 3000:3000
+      - 5555-5560:5555-5560
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - hoik-recruit-networks
+
+  db:
+    container_name: hoik-recruit-db
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_DATABASE: hoik-recruit
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - hoik-recruit-networks
+
+networks:
+  hoik-recruit-networks:

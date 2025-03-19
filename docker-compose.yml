@@ -1,0 +1,22 @@
+version: "3.8"
+
+name: hoik-recruit${SUFFIX}
+
+services:
+  app:
+    container_name: hoik-recruit${SUFFIX}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nginx
+    env_file:
+      - .env
+
+networks:
+  nginx:
+    name: nginx
+    external: true
