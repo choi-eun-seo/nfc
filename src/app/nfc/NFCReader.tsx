@@ -22,6 +22,7 @@ const NFCReader: React.FC = () => {
 
             const serialNumber = event.serialNumber || "Unknown Serial";
             console.log(`🔹 Serial Number: ${serialNumber}`);
+            alert(serialNumber);
 
             const records = event.message.records;
             records.forEach((record: any, index: number) => {
