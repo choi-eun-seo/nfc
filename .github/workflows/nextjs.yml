@@ -52,7 +52,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: $0
+          cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
@@ -67,14 +67,14 @@ jobs:
           path: |
             .next/cache
           # Generate a new cache whenever packages or source files change.
-          key: $-nextjs-$-$
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
-            $-nextjs-$-
+            ${{ runner.os }}-nextjs-
       - name: Install dependencies
-        run: $0 $0
+        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
-        run: $0 next build
+        run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -84,7 +84,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: $
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
