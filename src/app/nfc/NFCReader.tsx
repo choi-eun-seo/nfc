@@ -1,20 +1,24 @@
-"use client"; // ✅ 클라이언트 컴포넌트에서만 선언
+"use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 declare global {
   interface Window {
-    NDEFReader?: any; // ✅ 필요하면 정확한 타입을 지정하세요
+    NDEFReader?: any;
   }
 }
 
 const NFCReader: React.FC = () => {
+  const [lastTag, setLastTag] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
+
   useEffect(() => {
     const readNFC = async () => {
       if ("NDEFReader" in window) {
         try {
           const ndef = new (window as any).NDEFReader();
           await ndef.scan();
+          setStatus("NFC 리더가 활성화되었습니다");
           console.log("✅ NFC 리더 시작됨");
 
           ndef.onreading = (event: any) => {
@@ -22,7 +26,8 @@ const NFCReader: React.FC = () => {
 
             const serialNumber = event.serialNumber || "Unknown Serial";
             console.log(`🔹 Serial Number: ${serialNumber}`);
-            alert(serialNumber);
+            setLastTag(serialNumber); // 상태 업데이트
+            setStatus(`태그가 감지되었습니다: ${serialNumber}`);
 
             const records = event.message.records;
             records.forEach((record: any, index: number) => {
@@ -42,13 +47,18 @@ const NFCReader: React.FC = () => {
             })
               .then((response) => response.json())
               .then((data) => console.log("🖥️ 서버 응답:", data))
-              .catch((error) => console.error("❌ 서버 요청 오류:", error));
+              .catch((error) => {
+                console.error("❌ 서버 요청 오류:", error);
+                setStatus("서버 요청 중 오류가 발생했습니다");
+              });
           };
         } catch (error) {
           console.error("❌ NFC 읽기 오류:", error);
+          setStatus("NFC 읽기 오류가 발생했습니다");
         }
       } else {
         console.log("⚠️ Web NFC가 지원되지 않는 기기입니다.");
+        setStatus("이 기기에서는 Web NFC가 지원되지 않습니다");
       }
     };
 
@@ -56,9 +66,22 @@ const NFCReader: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h1>NFC Reader</h1>
-      <p>📡 NFC 태그를 기기에 가까이 가져가세요.</p>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">NFC Reader</h1>
+      <p className="mb-4">📡 NFC 태그를 기기에 가까이 가져가세요.</p>
+
+      {status && (
+        <div className="bg-blue-100 p-3 rounded-lg mb-4">
+          <p className="text-blue-800">{status}</p>
+        </div>
+      )}
+
+      {lastTag && (
+        <div className="bg-green-100 p-3 rounded-lg">
+          <h2 className="font-bold mb-2">마지막으로 읽은 태그:</h2>
+          <p className="text-green-800">{lastTag}</p>
+        </div>
+      )}
     </div>
   );
 };
