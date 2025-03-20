@@ -1,26 +1,19 @@
-// /** @type {import('next').NextConfig} */
-// const nextConfig = {
-  
-//   experimental: {},
-// };
-
 // export default nextConfig;
+/** @type {import('next').NextConfig} */
 
+const nextConfig = {
+  output: "export",
 
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  /* config options here */
 
   webpack(config) {
-    // Grab the existing rule that handles SVG imports
-
+    // 기존 SVG 설정 유지
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg"),
     );
@@ -28,19 +21,17 @@ const nextConfig: NextConfig = {
     const svgrQuery = /comp/;
 
     config.module.rules.push(
-      // Reapply the existing rule, but only for svg imports ending in ?url
       {
         ...fileLoaderRule,
         test: /\.svg$/i,
         resourceQuery: {
           not: [...fileLoaderRule.resourceQuery.not, svgrQuery],
-        }, // exclude if *.svg?url
+        },
       },
-      // Convert all other *.svg imports to React components
       {
         test: /\.svg$/i,
         issuer: fileLoaderRule.issuer,
-        resourceQuery: svgrQuery, // *.svg?url
+        resourceQuery: svgrQuery,
         use: [
           {
             loader: "@svgr/webpack",
@@ -55,8 +46,10 @@ const nextConfig: NextConfig = {
       },
     );
 
-    // Modify the file loader rule to ignore *.svg, since we have it handled now.
     fileLoaderRule.exclude = /\.svg$/i;
+
+    // 추가 최적화
+    config.optimization.minimize = true;
 
     return config;
   },
