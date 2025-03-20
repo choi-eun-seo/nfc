@@ -1,8 +1,9 @@
-// export default nextConfig;
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
   output: "export",
+  basePath: "/nfc", // GitHub Pages 레포지토리 이름
+  assetPrefix: "/nfc/", // 정적 자산 경로 설정
 
   trailingSlash: true,
   images: {
@@ -12,10 +13,11 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
+  // 기존 webpack 설정 유지
   webpack(config) {
-    // 기존 SVG 설정 유지
+    // SVG 관련 설정
     const fileLoaderRule = config.module.rules.find((rule) =>
-      rule.test?.test?.(".svg"),
+      rule.test?.test?.(".svg")
     );
 
     const svgrQuery = /comp/;
@@ -43,15 +45,20 @@ const nextConfig = {
             },
           },
         ],
-      },
+      }
     );
 
     fileLoaderRule.exclude = /\.svg$/i;
-
-    // 추가 최적화
     config.optimization.minimize = true;
 
     return config;
+  },
+
+  // GitHub Pages를 위한 추가 설정
+  experimental: {
+    images: {
+      unoptimized: true,
+    },
   },
 };
 
