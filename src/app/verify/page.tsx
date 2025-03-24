@@ -15,14 +15,28 @@ function VerifyContent() {
         const enc = searchParams.get("enc");
         const cmac = searchParams.get("cmac");
 
-        // 리퍼러 체크
-        const referrer = document.referrer;
-        const isDirectAccess =
-          !referrer || !referrer.includes("nfc") || referrer.includes("verify");
+        // 1. 네비게이션 타입 체크
+        const navEntry = performance.getEntriesByType(
+          "navigation"
+        )[0] as PerformanceNavigationTiming;
 
-        // 비정상 접근 체크
-        if (isDirectAccess) {
-          router.replace("/error?message=비정상적인_접근입니다");
+        // 2. 접근 방식 검증
+        const isNFCAccess =
+          navEntry.type === "navigate" && // 직접 네비게이션
+          //   navEntry.loadEventTime < 2000 && // 빠른 로드 시간
+          !document.referrer && // 리퍼러 없음 (NFC는 보통 리퍼러가 없음)
+          window.history.length === 1; // 첫 페이지 방문
+
+        // 3. 비정상 접근 체크
+        if (!isNFCAccess) {
+          console.log("Access Type:", {
+            type: navEntry.type,
+            // loadTime: navEntry.loadEventTime,
+            referrer: document.referrer,
+            historyLength: window.history.length,
+          });
+          alert(navEntry.type + " " + document.referrer + " " + window.history.length);
+          router.replace("/error?message=NFC_태그를_통해_접근해주세요");
           return;
         }
 
