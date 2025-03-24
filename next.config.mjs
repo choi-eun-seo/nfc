@@ -2,9 +2,7 @@
 
 const nextConfig = {
   output: "export",
-  basePath: "/nfc", // GitHub Pages 레포지토리 이름
-  assetPrefix: "/nfc/", // 정적 자산 경로 설정
-
+  basePath: "/nfc",
   trailingSlash: true,
   images: {
     unoptimized: true,
@@ -13,9 +11,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // 기존 webpack 설정 유지
   webpack(config) {
-    // SVG 관련 설정
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg")
     );
@@ -52,13 +48,6 @@ const nextConfig = {
     config.optimization.minimize = true;
 
     return config;
-  },
-
-  // GitHub Pages를 위한 추가 설정
-  experimental: {
-    images: {
-      unoptimized: true,
-    },
   },
 };
 
