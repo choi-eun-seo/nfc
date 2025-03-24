@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,8 +11,11 @@ export default function VerifyPage() {
   useEffect(() => {
     const verifyTag = async () => {
       try {
-        const tagId = searchParams.get("id");
-        if (!tagId) {
+        const picc = searchParams.get("picc_data");
+        const enc = searchParams.get("enc");
+        const cmac = searchParams.get("cmac");
+
+        if (!picc || !enc || !cmac) {
           setStatus("유효하지 않은 NFC 태그입니다.");
           return;
         }
@@ -24,9 +26,9 @@ export default function VerifyPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            tagId,
-            timestamp: Date.now(),
-            userAgent: navigator.userAgent,
+            picc,
+            enc,
+            cmac,
           }),
         });
 
@@ -37,7 +39,7 @@ export default function VerifyPage() {
           return;
         }
 
-        setStatus(`성공! ${data.usageCount}번째 사용`);
+        setStatus("태그 검증 성공!");
         // 성공 시 3초 후 스탬프 페이지로 이동
         setTimeout(() => {
           router.replace("/stamp");
