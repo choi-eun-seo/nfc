@@ -1,4 +1,4 @@
-import NFCReader from "./NFCReader";
+import NFCReader from "./NFCReader2";
 
 export default function NFCPage() {
     return (
